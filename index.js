@@ -16,14 +16,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const corsOption = {
-  origin: [
-    "http://localhost:5173",
-    "https://jobjunction-samad.netlify.app"
-  ],
-  credentials: true,
-};
-app.use(cors(corsOption));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://jobjunction-samad.netlify.app"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // Routes
 app.use("/api/v1/user", userRoute);
